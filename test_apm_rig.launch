@@ -1,6 +1,7 @@
 <launch>
  
-	<arg name="fcu_url" default="/dev/ttyACM0:57600" />
+	<!--<arg name="fcu_url" default="/dev/ttyACM0:57600" />-->
+    <arg name="fcu_url" default="/dev/ttyUSB0:57600" />
 	<arg name="gcs_url" default="" />
 	<arg name="tgt_system" default="1" />
 	<arg name="tgt_component" default="1" />
@@ -20,6 +21,7 @@
 		<param name="target_component_id" value="$(arg tgt_component)" />
  
         <rosparam command="load" file="$(arg pluginlists_yaml)" />
+		<rosparam command="load" file="$(arg config_yaml)" />
  
 		<!-- enable heartbeat send and reduce timeout -->
 		<param name="conn_heartbeat" value="5.0" />
