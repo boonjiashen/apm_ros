@@ -72,23 +72,25 @@ class Setpoint:
     def navigate(self):
         rate = self.rospy.Rate(10) # 10hz
         
-        msg = PoseStamped()
-        msg.header = Header() 
-        msg.header.frame_id = "base_footprint"
-        msg.header.stamp = rospy.Time.now()
+        pose_msg = PoseStamped()
+        pose_msg.header = Header() 
+        pose_msg.header.frame_id = "base_footprint"
+        pose_msg.header.stamp = rospy.Time.now()
 
         while 1:
-            msg.pose.position.x = self.x
-            msg.pose.position.y = self.y
-            msg.pose.position.z = self.z
+            pose_msg.pose.position.x = self.x
+            pose_msg.pose.position.y = self.y
+            pose_msg.pose.position.z = self.z
 
             # For demo purposes we will lock yaw/heading to north.
             yaw_degrees = 0  # North
             yaw = radians(yaw_degrees)
             quaternion = quaternion_from_euler(0, 0, yaw)
-            msg.pose.orientation = Quaternion(*quaternion)
+            pose_msg.pose.orientation = Quaternion(*quaternion)
 
-            self.pub.publish(msg)
+            info = ' | '.join(str(pose_msg.pose.position).splitlines())
+            rospy.loginfo(info)
+            self.pub.publish(pose_msg)
 
             rate.sleep()
 
