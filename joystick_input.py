@@ -18,18 +18,25 @@ while True:
             exit()
         a=100
         screen.fill((255,255,255))
-        if pygame.key.get_focused():
-            presses = [pygame.key.name(i) for i, is_pressed in enumerate(pygame.key.get_pressed()) if is_pressed]
-            #print presses
-            if 'escape' in presses:
-                exit()
-            press=pygame.key.get_pressed()
-            for i in xrange(0,len(press)): 
-                if press[i]==1:
-                    name=pygame.key.name(i) 
-                    text=f1.render(name,True,(0,0,0))
-                    screen.blit(text,(100,a))
-                    a=a+100
-            pygame.display.update()
+
+        if not pygame.key.get_focused():
+            continue
+
+        names = [pygame.key.name(i) for i, is_pressed in enumerate(pygame.key.get_pressed()) if is_pressed]
+        #print names
+        if 'escape' in names:
+            exit()
+        ys = [100 * i for i in range(1, 1 + len(names))]
+        for name, y in zip(names, ys):
+            text = f1.render(name, True, (0, 0, 0))
+            screen.blit(text, (100, y))
+        # press=pygame.key.get_pressed()
+        # for i in xrange(0,len(press)): 
+        #     if press[i]==1:
+        #         name=pygame.key.name(i) 
+        #         text=f1.render(name,True,(0,0,0))
+        #         screen.blit(text,(100,a))
+        #         a=a+100
+        pygame.display.update()
           
           
