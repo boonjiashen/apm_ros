@@ -36,29 +36,6 @@ char2dir = {
 	'.': 'SE',
 }
 
-moveBindings = {
-        'i':(1,0),
-        'o':(1,-1),
-        'j':(0,1),
-        'l':(0,-1),
-        'u':(1,1),
-        ',':(-1,0),
-        '.':(-1,1),
-        'm':(-1,-1),
-           }
-
-speedBindings={
-        'q':(1.1,1.1),
-        'z':(.9,.9),
-        'w':(1.1,1),
-        'x':(.9,1),
-        'e':(1,1.1),
-        'c':(1,.9),
-          }
-
-speed = .5
-turn = 1
-
 def getKey():
     tty.setraw(sys.stdin.fileno())
     select.select([sys.stdin], [], [], 0)
@@ -66,19 +43,12 @@ def getKey():
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
     return key
 
-def vels(speed,turn):
-    return "currently:\tspeed %s\tturn %s " % (speed,turn)
-
 def keyboard():
     settings = termios.tcgetattr(sys.stdin)
     
     pub = rospy.Publisher('main_wind', String, queue_size=10)
     rospy.init_node('teleop_twist_keyboard')
-    rate = rospy.Rate(10) # 10hz
-
-    x = 0
-    th = 0
-    status = 0
+    rate = rospy.Rate(30) # 10hz
 
     try:
         print msg
@@ -87,7 +57,7 @@ def keyboard():
         while not rospy.is_shutdown():
             key = getKey()
             print key
-            if key == '\x03':
+            if key == '\x03':  # Break at CTRL+C
             	break
             pub.publish(key)
             rate.sleep()
