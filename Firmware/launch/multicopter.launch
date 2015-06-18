@@ -1,26 +1,19 @@
 <launch>
 
 <!--Extreme 3D PRO params-->
-<!--<param name="$(arg ns)/map_r" value="2" type="int" />-->
-<!--<param name="$(arg ns)/scale_z" value="0.5" type="double" />-->
-<!--<param name="$(arg ns)/off_z" value="1" type="double" />-->
-<!--<param name="$(arg ns)/map_z" value="3" type="int" />-->
-<!--<param name="$(arg ns)/map_x" value="1" type="int" />-->
-<!--<param name="$(arg ns)/map_y" value="0" type="int" />-->
+<param name="$(arg ns)/map_r" value="2" type="int" />
+<param name="$(arg ns)/scale_z" value="0.5" type="double" />
+<param name="$(arg ns)/off_z" value="1" type="double" />
+<param name="$(arg ns)/map_z" value="3" type="int" />
+<param name="$(arg ns)/map_x" value="1" type="int" />
+<param name="$(arg ns)/map_y" value="0" type="int" />
 
 <!--FrSKY Taranis Plus params-->
-<param name="$(arg ns)/map_x" value="2" type="int" /> 
-<param name="$(arg ns)/map_y" value="1" type="int" />
-<param name="$(arg ns)/map_z" value="0" type="int" />
-<param name="$(arg ns)/map_r" value="3" type="int" />
+<!--Overwrites params above-->
 <param name="$(arg ns)/scale_y" value="-1" type="double" />
 <param name="$(arg ns)/off_y" value="0" type="double" />
 <param name="$(arg ns)/scale_z" value="-1" type="double" />
 <param name="$(arg ns)/off_z" value="0" type="double" />
-<!--<param name="$(arg ns)/map_x" value="2" type="int" />-->
-<!--<param name="$(arg ns)/map_y" value="1" type="int" />-->
-<!--<param name="$(arg ns)/map_z" value="0" type="int" />-->
-<!--<param name="$(arg ns)/map_r" value="3" type="int" />-->
 
 <arg name="ns"/>
 

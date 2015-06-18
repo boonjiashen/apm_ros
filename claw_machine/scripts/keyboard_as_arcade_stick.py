@@ -54,14 +54,15 @@ def keyboard():
     try:
         while not rospy.is_shutdown():
             key = getKey()
-            print key
             if key == '\x03':  # Break at CTRL+C
             	break
-            ret = hash(key) % 100
-            pub.publish(ret)
-            #pub.publish(main_wind=(hash(key) % 100))
+            if key not in char2dir:  # ignore unexpected keystrokes
+                continue
+
+            direction = char2dir[key]  # string
+            msg = getattr(claw_machine.msg.main_wind, direction)  # uint8
+            pub.publish(msg)
             rate.sleep()
-        print 'hi'
 
     except Exception as e:
         print e
