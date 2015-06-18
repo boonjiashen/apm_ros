@@ -5,6 +5,7 @@ import rospy
 from geometry_msgs.msg import Twist
 from std_msgs.msg import UInt8
 from std_msgs.msg import String
+import claw_machine.msg
 
 import sys, select, termios, tty
 
@@ -46,34 +47,29 @@ def getKey():
 def keyboard():
     settings = termios.tcgetattr(sys.stdin)
     
-    pub = rospy.Publisher('main_wind', String, queue_size=10)
-    rospy.init_node('teleop_twist_keyboard')
+    pub = rospy.Publisher('main_wind', claw_machine.msg.main_wind, queue_size=10)
+    rospy.init_node('keyboard', anonymous=True)
     rate = rospy.Rate(30) # 10hz
 
     try:
-        print msg
-        print 'dawg'
-        print 'son'
         while not rospy.is_shutdown():
             key = getKey()
             print key
             if key == '\x03':  # Break at CTRL+C
             	break
-            pub.publish(key)
+            ret = hash(key) % 100
+            pub.publish(ret)
+            #pub.publish(main_wind=(hash(key) % 100))
             rate.sleep()
         print 'hi'
 
     except Exception as e:
         print e
-
     finally:
-        pub.publish('dayum')
-
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
 
 if __name__ == "__main__":
     settings = termios.tcgetattr(sys.stdin)
-
 
     try:
         keyboard()
