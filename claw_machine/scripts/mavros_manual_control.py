@@ -33,11 +33,14 @@ class ManualControl(object):
         msg.header = std_msgs.msg.Header() 
         msg.header.stamp = rospy.Time.now()  
 
+        # cmd_velocity expects xyz as East-North-Up
+        # https://github.com/mavlink/mavros/blob/master/mavros/src/plugins/setpoint_velocity.cpp#L71-L77
         msg.twist = geometry_msgs.msg.Twist()
         msg.twist.linear = geometry_msgs.msg.Vector3(
-                x=magnitude * north_vel,
-                y=magnitude * east_vel,
-                )
+                x=magnitude * east_vel,
+                y=magnitude * north_vel,
+                z=0,
+                )  
 
         self.pub.publish(msg)
 
