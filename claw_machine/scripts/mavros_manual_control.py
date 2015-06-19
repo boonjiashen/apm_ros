@@ -8,43 +8,50 @@ import geometry_msgs.msg
 import std_msgs.msg
 import claw_machine.msg
 
-# Maps constant integers (0, 1, etc) to direction strings ('N', 'S', etc)
-# So that we can quickly get the strings during the infinite loop
-msg_val2key = dict([
-        (val, key)
-        for key, val in claw_machine.msg.main_wind.__dict__.iteritems()
-        if type(val) == int
-        ])
+class ManualControl(object):
 
-def callback(msg):
-    direction = msg_val2key[msg.direction]  # String 'N', 'S', etc
-    north_vel = ('N' in direction) - ('S' in direction)
-    east_vel = ('E' in direction) - ('W' in direction)
+    # Maps constant integers (0, 1, etc) to direction strings ('N', 'S', etc)
+    # So that we can quickly get the strings during the infinite loop
+    msg_val2key = dict([
+            (val, key)
+            for key, val in claw_machine.msg.main_wind.__dict__.iteritems()
+            if type(val) == int
+            ])
+    pub = None  # publisher object whose publish() method publishes
 
-    msg = geometry_msgs.msg.TwistStamped()
-    msg.header = std_msgs.msg.Header() 
-    msg.header.frame_id = ""
-    msg.header.stamp = rospy.Time.now()
+    def callback(self, msg):
+        direction = self.msg_val2key[msg.direction]  # String 'N', 'S', etc
+        north_vel = ('N' in direction) - ('S' in direction)
+        east_vel = ('E' in direction) - ('W' in direction)
+        magnitude = 10  # in meters/sec
 
-    msg.twist = geometry_msgs.msg.Twist()
-    msg.twist.linear = geometry_msgs.msg.Vector3(
-            x=north_vel,
-            y=east_vel,
-            )
-    print (msg)
+        msg = geometry_msgs.msg.TwistStamped()
 
-def manual_control():
-    print 'wow'
+        # We only define `stamp` in header because it's the only
+        # member of header used in setpoint_velocity/cmd_vel.
+        # `seq` is automatically generated
+        msg.header = std_msgs.msg.Header() 
+        msg.header.stamp = rospy.Time.now()  
 
-    rospy.init_node('listener', anonymous=True)
+        msg.twist = geometry_msgs.msg.Twist()
+        msg.twist.linear = geometry_msgs.msg.Vector3(
+                x=magnitude * north_vel,
+                y=magnitude * east_vel,
+                )
 
-    rospy.Subscriber("main_wind", claw_machine.msg.main_wind, callback)
-    rospy.Publisher("/mavros/setpoint_velocity/cmd_vel",
-            geometry_msgs.msg.TwistStamped,
-            queue_size=10)
+        self.pub.publish(msg)
 
-    # spin() simply keeps python from exiting until this node is stopped
-    rospy.spin()
+    def __init__(self):
+        rospy.init_node('listener', anonymous=True)
+
+        rospy.Subscriber("main_wind", claw_machine.msg.main_wind, self.callback)
+
+        self.pub = rospy.Publisher("/mavros/setpoint_velocity/cmd_vel",
+                geometry_msgs.msg.TwistStamped,
+                queue_size=10)
+
+        # spin() simply keeps python from exiting until this node is stopped
+        rospy.spin()
 
 if __name__ == '__main__':
-    manual_control()
+    ManualControl()
