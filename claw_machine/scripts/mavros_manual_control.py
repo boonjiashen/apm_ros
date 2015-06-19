@@ -4,12 +4,9 @@ in that respective direction"""
 import roslib; roslib.load_manifest('teleop_twist_keyboard')
 import rospy
 
-from geometry_msgs.msg import Twist
-from std_msgs.msg import UInt8
-from std_msgs.msg import String
+import geometry_msgs.msg
+import std_msgs.msg
 import claw_machine.msg
-
-import sys, select, termios, tty
 
 # Maps constant integers (0, 1, etc) to direction strings ('N', 'S', etc)
 # So that we can quickly get the strings during the infinite loop
@@ -20,13 +17,31 @@ msg_val2key = dict([
         ])
 
 def callback(msg):
-    print msg_val2key[msg.direction]
+    direction = msg_val2key[msg.direction]  # String 'N', 'S', etc
+    north_vel = ('N' in direction) - ('S' in direction)
+    east_vel = ('E' in direction) - ('W' in direction)
+
+    msg = geometry_msgs.msg.TwistStamped()
+    msg.header = std_msgs.msg.Header() 
+    msg.header.frame_id = ""
+    msg.header.stamp = rospy.Time.now()
+
+    msg.twist = geometry_msgs.msg.Twist()
+    msg.twist.linear = geometry_msgs.msg.Vector3(
+            x=north_vel,
+            y=east_vel,
+            )
+    print (msg)
 
 def manual_control():
+    print 'wow'
 
     rospy.init_node('listener', anonymous=True)
 
     rospy.Subscriber("main_wind", claw_machine.msg.main_wind, callback)
+    rospy.Publisher("/mavros/setpoint_velocity/cmd_vel",
+            geometry_msgs.msg.TwistStamped,
+            queue_size=10)
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
