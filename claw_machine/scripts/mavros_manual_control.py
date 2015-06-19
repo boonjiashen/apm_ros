@@ -7,6 +7,10 @@ import rospy
 import geometry_msgs.msg
 import std_msgs.msg
 import claw_machine.msg
+import math
+
+PI = 3.14159
+DEG2RAD = lambda x: x / 180. * PI
 
 class ManualControl(object):
 
@@ -20,10 +24,17 @@ class ManualControl(object):
     pub = None  # publisher object whose publish() method publishes
 
     def callback(self, msg):
+
         direction = self.msg_val2key[msg.direction]  # String 'N', 'S', etc
         north_vel = ('N' in direction) - ('S' in direction)
         east_vel = ('E' in direction) - ('W' in direction)
         magnitude = 10  # in meters/sec
+
+        # Apply angular offset
+        theta = DEG2RAD(rospy.get_param('~ang_offset_in_deg'))
+        ctheta, stheta = math.cos(theta), math.sin(theta)
+        north_vel, east_vel = north_vel*ctheta - east_vel*stheta,  \
+                north_vel*stheta + east_vel*ctheta
 
         msg = geometry_msgs.msg.TwistStamped()
 
@@ -52,6 +63,8 @@ class ManualControl(object):
         self.pub = rospy.Publisher("/mavros/setpoint_velocity/cmd_vel",
                 geometry_msgs.msg.TwistStamped,
                 queue_size=10)
+
+        rospy.set_param('~ang_offset_in_deg', 0)
 
         # spin() simply keeps python from exiting until this node is stopped
         rospy.spin()
