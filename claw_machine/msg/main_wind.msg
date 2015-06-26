@@ -1,0 +1,10 @@
+uint8 N=0
+uint8 S=1
+uint8 E=2
+uint8 W=3
+uint8 NE=4
+uint8 NW=5
+uint8 SE=6
+uint8 SW=7
+uint8 X=8
+uint8 direction
